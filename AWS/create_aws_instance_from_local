@@ -1,0 +1,47 @@
+step 1-pip install awscli boto3
+step2-create a user and give AmazonEc2FullAccess
+		get-access key -AKIARQNTMRTG2D4RKDLS
+			secret accesskey-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
+			location-eu-west-1
+
+step3-aws configure
+				It will prompt you to provide the Access Key ID, Secret Key, Default AWS region, and output format.
+				Once those are provided, credentials are saved in a local file at path ~/.aws/credentials
+				
+				AWS Access Key ID [None]: AKIARQNTMRTG2D4RKDLS
+				AWS Secret Access Key [None]: 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
+				Default region name [None]: eu-west-1
+				Default output format [None]: json
+				
+step4- aws ec2 describe-instances
+			it gives all the information of the instances that was running
+			
+step5- run the below python code
+		
+		import boto3
+		ec2 = boto3.resource('ec2')
+
+		# create a file to store the key locally
+		outfile = open('ec2-keypair.pem','w')
+
+		# call the boto ec2 function to create a key pair
+		key_pair = ec2.create_key_pair(KeyName='ec2-keypair')
+
+		# capture the key and store it in a file
+		KeyPairOut = str(key_pair.key_material)
+		print(KeyPairOut)
+		outfile.write(KeyPairOut)
+		
+step6- to create a new instance run the below python code
+
+		import boto3
+		ec2 = boto3.resource('ec2')
+		instances = ec2.create_instances(
+			ImageId='ami-01f3682deed220c2a',
+			MinCount=1,
+			MaxCount=2,
+			InstanceType='t2.micro',
+			KeyName='ec2-keypair'
+		)
+		
+		this will create two instances(whose image id is ami-01f3682deed220c2a which you will find it on aws) of type t2.micro
